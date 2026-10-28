@@ -1,0 +1,103 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  id: string;
+  title: string;
+  /** Seconds into the video to start playback. */
+  start?: number;
+  /** Custom thumbnail; defaults to YouTube's own. */
+  poster?: ImageMetadata;
+}
+
+// Click-to-load embed: shows the thumbnail, loads YouTube's player only on demand.
+const { id, title, start, poster } = Astro.props;
+---
+
+<div class="yt" data-yt={id} data-yt-title={title} data-yt-start={start}>
+  {
+    poster ? (
+      <Image src={poster} alt="" widths={[480, 960, 1280]} sizes="(min-width: 760px) 48vw, 96vw" />
+    ) : (
+      <img src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt="" loading="lazy" width="480" height="360" />
+    )
+  }
+  <button class="yt__play" type="button" aria-label={`Play video: ${title}`}>
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.2-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z"></path>
+    </svg>
+  </button>
+</div>
+
+<script>
+  for (const embed of document.querySelectorAll<HTMLElement>('[data-yt]')) {
+    embed.querySelector('button')?.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      const start = embed.dataset.ytStart ? `&start=${embed.dataset.ytStart}` : '';
+      iframe.src = `https://www.youtube-nocookie.com/embed/${embed.dataset.yt}?autoplay=1&rel=0${start}`;
+      iframe.title = embed.dataset.ytTitle ?? 'YouTube video';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      embed.replaceChildren(iframe);
+      iframe.focus();
+    });
+  }
+</script>
+
+<style>
+  .yt {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--ink);
+  }
+
+  .yt img,
+  .yt :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .yt img {
+    object-fit: cover;
+    transition: transform 0.8s var(--ease);
+  }
+
+  .yt:hover img {
+    transform: scale(1.03);
+  }
+
+  .yt__play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: rgb(18 18 18 / 0.18);
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .yt__play svg {
+    width: 72px;
+    height: 72px;
+    padding: 22px 20px 22px 24px;
+    border-radius: 50%;
+    background: var(--paper);
+    fill: currentColor;
+    transition:
+      background-color 0.2s var(--ease),
+      transform 0.3s var(--ease);
+  }
+
+  .yt__play:hover svg {
+    background: var(--accent);
+    transform: scale(1.06);
+  }
+</style>

@@ -1,0 +1,611 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import YouTube from '../../components/YouTube.astro';
+import { getProjects, pad, type Project } from '../../lib/content';
+
+export const getStaticPaths = (async () => {
+  const projects = await getProjects();
+  const withPages = projects.filter((project) => project.data.page);
+  return withPages.map((project, i) => ({
+    params: { slug: project.id },
+    props: {
+      project,
+      number: projects.indexOf(project) + 1,
+      total: projects.length,
+      next: withPages[(i + 1) % withPages.length],
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  project: Project;
+  number: number;
+  total: number;
+  next: Project;
+}
+
+const { project, number, total, next } = Astro.props;
+const { Content } = await render(project);
+const data = project.data;
+
+const hero = data.hero ?? data.cover;
+const heroAlt = data.heroAlt ?? data.coverAlt;
+
+const spec = [
+  { label: 'Year', value: data.year?.toString() },
+  { label: 'Context', value: data.context },
+  { label: 'Timeline', value: data.timeline },
+  { label: 'Discipline', value: data.disciplines.join(', ') },
+].filter((item): item is { label: string; value: string } => Boolean(item.value));
+
+// Image-led sections render as feature rows; consecutive text-only sections share a notes grid.
+type Section = (typeof data.sections)[number];
+const groups: Array<{ kind: 'feature'; section: Section; n: number } | { kind: 'notes'; items: Array<{ section: Section; n: number }> }> = [];
+data.sections.forEach((section, i) => {
+  const n = i + 1;
+  const last = groups.at(-1);
+  if (section.image) groups.push({ kind: 'feature', section, n });
+  else if (last?.kind === 'notes') last.items.push({ section, n });
+  else groups.push({ kind: 'notes', items: [{ section, n }] });
+});
+---
+
+<BaseLayout title={data.title} description={data.summary} image={data.cover}>
+  <article class="project">
+    <div class="container">
+      <nav class="crumbs label" aria-label="Breadcrumb">
+        <a href="/#work" class="crumbs__back"><span class="arrow" aria-hidden="true">←</span> All work</a>
+        <span>Project {pad(number)} / {pad(total)}</span>
+      </nav>
+
+      <header class="project__head">
+        <h1 class="project__title rise">{data.title}</h1>
+        <p class="project__summary rise" style="--i: 1">{data.summary}</p>
+      </header>
+
+      <dl class="spec rise" style="--i: 2">
+        {
+          spec.map(({ label, value }) => (
+            <div class="spec__cell">
+              <dt class="label">{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+
+    <figure class="project__hero container rise" style="--i: 3">
+      <Image
+        src={hero}
+        alt={heroAlt}
+        widths={[640, 960, 1280, 1600, 2000]}
+        sizes="(min-width: 1560px) 1520px, 96vw"
+        priority
+        style={`--ar: ${hero.width / hero.height}`}
+      />
+    </figure>
+
+    <div class="project__overview container">
+      <div class="prose">
+        <Content />
+      </div>
+
+      {
+        (data.contributions.length > 0 || data.highlights.length > 0 || data.skills.length > 0) && (
+          <aside class="project__aside" aria-label="Project facts">
+            {data.contributions.length > 0 && (
+              <div class="part">
+                <h2 class="label">My part</h2>
+                <ul class="part__list">
+                  {data.contributions.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {data.highlights.length > 0 && (
+              <dl class="highlights">
+                {data.highlights.map(({ value, label }) => (
+                  <div class="highlights__item">
+                    <dt class="highlights__label">{label}</dt>
+                    <dd class="highlights__value">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+            {data.skills.length > 0 && (
+              <div class="skills">
+                <h2 class="label">Skills</h2>
+                <ul class="skills__list">
+                  {data.skills.map((skill) => (
+                    <li>{skill}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </aside>
+        )
+      }
+    </div>
+
+    {
+      groups.length > 0 && (
+        <section class="build container" aria-labelledby="build-title">
+          <h2 id="build-title" class="label build__title">
+            {data.sectionsTitle}
+          </h2>
+          {groups.map((group) =>
+            group.kind === 'feature' ? (
+              <div class="feature">
+                <div class="feature__text">
+                  <p class="feature__index label">{pad(group.n)}</p>
+                  <h3 class="feature__heading">{group.section.heading}</h3>
+                  <p class="feature__body">{group.section.body}</p>
+                </div>
+                <figure class="feature__media reveal">
+                  <Image
+                    src={group.section.image!}
+                    alt={group.section.imageAlt ?? ''}
+                    widths={[640, 960, 1280, 1600]}
+                    sizes="(min-width: 960px) 58vw, 96vw"
+                  />
+                </figure>
+              </div>
+            ) : (
+              <div class="notes">
+                {group.items.map(({ section, n }) => (
+                  <div class="note">
+                    <p class="feature__index label">{pad(n)}</p>
+                    <h3 class="note__heading">{section.heading}</h3>
+                    <p class="note__body">{section.body}</p>
+                  </div>
+                ))}
+              </div>
+            ),
+          )}
+        </section>
+      )
+    }
+
+    {
+      data.gallery.length > 0 && (
+        <section class="gallery container" aria-label="More photos">
+          {data.gallery.map(({ image, alt, caption }) => (
+            <figure class="gallery__item reveal">
+              <Image src={image} alt={alt} widths={[640, 960, 1280, 1600]} sizes="(min-width: 960px) 70vw, 96vw" />
+              {caption && <figcaption class="label">{caption}</figcaption>}
+            </figure>
+          ))}
+        </section>
+      )
+    }
+
+    {
+      data.videos.length > 0 && (
+        <section class="videos container" aria-labelledby="videos-title">
+          <h2 id="videos-title" class="label">
+            Videos
+          </h2>
+          <div class="videos__grid">
+            {data.videos.map(({ youtube, title, note, start, poster }) => (
+              <figure class="video">
+                <YouTube id={youtube} title={title} start={start} poster={poster} />
+                <figcaption>
+                  <span class="video__title">{title}</span>
+                  {note && <span class="video__note">{note}</span>}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <nav class="next container" aria-label="Next project">
+      <a class="next__link" href={`/work/${next.id}/`}>
+        <span class="next__text">
+          <span class="label">Next project</span>
+          <span class="next__title">
+            {next.data.title} <span class="arrow" aria-hidden="true">→</span>
+          </span>
+        </span>
+        <span class="next__thumb">
+          <Image src={next.data.cover} alt="" widths={[320, 640]} sizes="320px" style={`object-position: ${next.data.coverPosition}`} />
+        </span>
+      </a>
+    </nav>
+  </article>
+</BaseLayout>
+
+<style>
+  .project {
+    padding-top: clamp(20px, 3vw, 40px);
+  }
+
+  .crumbs {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .crumbs__back {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .crumbs__back:hover .arrow {
+    transform: translateX(-4px);
+  }
+
+  .project__head {
+    margin-top: clamp(48px, 8vw, 120px);
+  }
+
+  .project__title {
+    margin-left: -0.04em;
+    font-size: clamp(3rem, 9.4vw, 10.5rem);
+    font-weight: 800;
+    font-stretch: 112%;
+    line-height: 0.86;
+    letter-spacing: -0.05em;
+    text-wrap: balance;
+  }
+
+  .project__summary {
+    max-width: 30ch;
+    margin-top: clamp(20px, 2.6vw, 36px);
+    font-size: clamp(1.375rem, 2.5vw, 2.25rem);
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  .spec {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+    margin-top: clamp(36px, 5vw, 64px);
+    border-top: 1px solid var(--ink);
+  }
+
+  .spec__cell {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    padding: 14px 18px 4px 0;
+  }
+
+  .spec dd {
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  /* Hero image keeps its natural shape, capped to the viewport height. */
+  .project__hero {
+    margin-top: clamp(40px, 6vw, 88px);
+  }
+
+  .project__hero img {
+    width: min(100%, 84svh * var(--ar));
+    margin-inline: auto;
+    border-radius: var(--radius);
+    background: var(--paper-2);
+  }
+
+  /* Overview ------------------------------------------------------------ */
+
+  .project__overview {
+    display: grid;
+    gap: clamp(48px, 6vw, 80px);
+    margin-top: clamp(64px, 9vw, 136px);
+  }
+
+  @media (min-width: 960px) {
+    .project__overview {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+      column-gap: 8%;
+    }
+  }
+
+  .prose :global(p) {
+    max-width: 52ch;
+    font-size: clamp(1.1875rem, 1.6vw, 1.5rem);
+    line-height: 1.45;
+    letter-spacing: -0.01em;
+    text-wrap: pretty;
+  }
+
+  .prose :global(p + p) {
+    margin-top: 1em;
+  }
+
+  .prose :global(a) {
+    text-decoration-color: var(--accent);
+    text-underline-offset: 0.2em;
+  }
+
+  .project__aside {
+    display: grid;
+    align-content: start;
+    gap: 40px;
+  }
+
+  .part {
+    display: grid;
+    gap: 14px;
+  }
+
+  .part__list {
+    border-top: 1px solid var(--ink);
+  }
+
+  .part__list li {
+    padding-block: 14px;
+    border-bottom: 1px solid var(--rule);
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+  }
+
+  .highlights {
+    display: grid;
+    border-top: 1px solid var(--ink);
+  }
+
+  .highlights__item {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 6px;
+    padding-block: 16px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .highlights__value {
+    font-size: clamp(2rem, 3.4vw, 3rem);
+    font-weight: 700;
+    font-stretch: 108%;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .highlights__label {
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  .skills {
+    display: grid;
+    gap: 14px;
+  }
+
+  .skills__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .skills__list li {
+    padding: 7px 12px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    font-size: 0.875rem;
+    line-height: 1.2;
+  }
+
+  /* Build sections ------------------------------------------------------ */
+
+  .build {
+    margin-top: clamp(88px, 12vw, 176px);
+  }
+
+  .build__title {
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--ink);
+    color: var(--ink);
+  }
+
+  .feature {
+    display: grid;
+    gap: 24px;
+    padding-block: clamp(36px, 5vw, 72px);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  @media (min-width: 960px) {
+    .feature {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+      column-gap: 6%;
+      align-items: start;
+    }
+
+    .feature__text {
+      position: sticky;
+      top: calc(var(--header-h) + 32px);
+    }
+  }
+
+  .feature__index {
+    color: var(--accent-ink);
+  }
+
+  .feature__heading {
+    margin-top: 12px;
+    font-size: clamp(1.75rem, 2.8vw, 2.75rem);
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+
+  .feature__body {
+    max-width: 44ch;
+    margin-top: 16px;
+    color: var(--ink-2);
+    font-size: 1.0625rem;
+  }
+
+  .feature__media img {
+    width: auto;
+    max-height: 86svh;
+    border-radius: var(--radius);
+  }
+
+  .notes {
+    display: grid;
+    gap: 32px clamp(24px, 3vw, 48px);
+    padding-block: clamp(36px, 5vw, 64px);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  @media (min-width: 760px) {
+    .notes {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+  }
+
+  .note__heading {
+    margin-top: 12px;
+    font-size: clamp(1.375rem, 2vw, 1.75rem);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+  }
+
+  .note__body {
+    max-width: 42ch;
+    margin-top: 12px;
+    color: var(--ink-2);
+  }
+
+  /* Gallery + videos ---------------------------------------------------- */
+
+  .gallery {
+    display: grid;
+    gap: clamp(24px, 4vw, 48px);
+    margin-top: clamp(48px, 6vw, 88px);
+  }
+
+  .gallery__item {
+    display: grid;
+    gap: 12px;
+  }
+
+  .gallery__item img {
+    width: auto;
+    max-height: 86svh;
+    border-radius: var(--radius);
+  }
+
+  .videos {
+    display: grid;
+    gap: 20px;
+    margin-top: clamp(88px, 12vw, 160px);
+  }
+
+  .videos__grid {
+    display: grid;
+    gap: 40px 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--ink);
+  }
+
+  @media (min-width: 760px) {
+    .videos__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* A lone video gets more room instead of sitting in half a row. */
+  .video:only-child {
+    grid-column: 1 / -1;
+    max-width: 1040px;
+  }
+
+  .video figcaption {
+    display: grid;
+    gap: 4px;
+    margin-top: 14px;
+  }
+
+  .video__title {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .video__note {
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  /* Next project -------------------------------------------------------- */
+
+  .next {
+    margin-top: var(--section-space);
+    margin-bottom: var(--section-space);
+  }
+
+  .next__link {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--ink);
+    text-decoration: none;
+  }
+
+  .next__text {
+    display: grid;
+    gap: 12px;
+  }
+
+  .next__title {
+    font-size: clamp(2.25rem, 6.4vw, 6.5rem);
+    font-weight: 800;
+    font-stretch: 110%;
+    line-height: 0.9;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+
+  .next__link:hover .next__title {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 3px;
+    text-underline-offset: 0.1em;
+  }
+
+  .next__link:hover .arrow {
+    transform: translateX(10px);
+  }
+
+  .next__thumb {
+    flex: none;
+    width: clamp(120px, 22vw, 320px);
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--radius);
+  }
+
+  .next__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.9s var(--ease);
+  }
+
+  .next__link:hover .next__thumb img {
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 560px) {
+    .next__thumb {
+      display: none;
+    }
+  }
+</style>

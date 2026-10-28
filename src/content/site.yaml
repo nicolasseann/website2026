@@ -1,0 +1,94 @@
+# Site-wide content: name, hero, about, experience, contact.
+# Image paths are relative to this file.
+
+settings:
+  name: Nicolas Coleman
+  role: Mechanical Engineer
+  tagline: Exploring the possibilities of curiosity.
+  lede: I love making things come to life
+  description: >-
+    Nicolas Coleman is a Stanford mechanical engineer who loves making things come to life,
+    with a focus on rapid prototyping.
+
+  titleBlock:
+    - label: Focus
+      value: Rapid prototyping and testing
+    - label: Education
+      value: Stanford University, B.S. ’26
+    - label: Latest
+      value: R&D Engineering Intern, Walt Disney Imagineering
+
+  reel:
+    poster: ../assets/site/reel-poster.jpg
+    src: /media/reel-1080.mp4
+    srcMobile: /media/reel-720.mp4
+    label: Showreel of builds and tests in the Hacksmith Industries shop
+
+  logos:
+    - name: Hacksmith Industries
+      image: ../assets/logos/hacksmith.png
+    - name: Walt Disney Imagineering
+      image: ../assets/logos/wdi.png
+    - name: NASA
+      image: ../assets/logos/nasa.png
+    - name: Stanford University
+      image: ../assets/logos/stanford.png
+
+  about:
+    lead: I’m a mechanical engineer who builds things out of curiosity.
+    portrait: ../assets/site/portrait.jpg
+    portraitAlt: Nicolas Coleman smiling in the Hacksmith Industries shop, wearing safety glasses and a black Hacksmith T-shirt.
+    body:
+      - In November 2016, a Hacksmith Industries video made me curious enough to build an electromagnetic Captain America shield. Almost eight years later I was working at Hacksmith as an R&D engineering intern, helping develop a pneumatic power-armor exoskeleton.
+      - Along the way I’ve been a robotics intern at Kind Humanoid, where I designed a biomimetic, tendon-driven robotic finger, and an R&D intern at Walt Disney Imagineering, contributing to the next generation of aqueous animatronics. I did all of that while studying mechanical engineering at Stanford.
+      - I like building things that wouldn’t exist otherwise, especially ones that make people feel super.
+    stats:
+      - value: "~2,000 lb"
+        label: Deadlifted by the power-armor exoskeleton
+      - value: "2.5M+"
+        label: Viewers reached by viral test videos
+      - value: "1 week"
+        label: From idea to first pneumatic-claws prototype
+      - value: "24 hrs"
+        label: Concept to finished trophy at Imagineering
+
+  experience:
+    - org: Walt Disney Imagineering
+      role: Research & Development Engineering Intern
+      dates: Since 2025
+      location: Glendale, CA
+      note: Next-generation aqueous animatronics. On the team’s hydrofoil character, I’ve developed test equipment and the connection between its mast, foil and motor.
+    - org: Hacksmith Industries
+      role: Research & Development Engineering Intern
+      dates: 2024
+      location: Cambridge, ON
+      note: Contributed to the pneumatic design of a power-armor exoskeleton and interfaced it with the state machine that controls its movements.
+    - org: Kind Humanoid
+      role: Robotics Engineering Intern
+      dates: 2023 to 2024
+      location: Palo Alto, CA
+      note: Designed my first biomimetic robotic finger, working through multiple versions in three weeks.
+    - org: Stanford University
+      role: B.S. Mechanical Engineering
+      dates: Class of 2026
+      location: Stanford, CA
+
+  capabilities:
+    - group: Design & analysis
+      items: [SolidWorks, Fusion 360, Finite element analysis, XFLR5, Mechanism design, Pneumatic systems]
+    - group: Fabrication
+      items: [Machine shop, 3D printing, Laser cutting, Sheet-metal forming, Rapid prototyping]
+    - group: Electronics
+      items: [PCB design (KiCad), Arduino / C++, IMUs & sensors, Servo & stepper control]
+    - group: Software
+      items: [Python, OpenCV, scikit-learn, MATLAB, G-code, API development]
+
+  contact:
+    heading: Curious about something?
+    email: nicolas.coleman@disney.com
+    resume: /resume.pdf
+    links:
+      - label: LinkedIn
+        url: https://www.linkedin.com/in/nicol4sc
+      - label: Instagram
+        url: https://www.instagram.com/nicolasseann/

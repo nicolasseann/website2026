@@ -1,0 +1,147 @@
+---
+import { Image } from 'astro:assets';
+import { pad, projectHref, type Project } from '../lib/content';
+
+interface Props {
+  project: Project;
+  index: number;
+  eager?: boolean;
+}
+
+const { project, index, eager = false } = Astro.props;
+const { title, summary, cover, coverAlt, coverPosition, disciplines, year } = project.data;
+const href = projectHref(project);
+const Tag = href ? 'a' : 'div';
+---
+
+<Tag class:list={['card', { 'card--static': !href }]} href={href}>
+  <div class="card__media">
+    <Image
+      src={cover}
+      alt={coverAlt}
+      widths={[480, 720, 960, 1280]}
+      sizes="(min-width: 1100px) 31vw, (min-width: 640px) 46vw, 92vw"
+      loading={eager ? 'eager' : 'lazy'}
+      style={`object-position: ${coverPosition}`}
+    />
+    {
+      href && (
+        <span class="card__cta" aria-hidden="true">
+          View project <span class="arrow">↗</span>
+        </span>
+      )
+    }
+  </div>
+  <div class="card__body">
+    <p class="card__meta label">
+      <span class="card__index">{pad(index)}</span>
+      <span class="card__disciplines">{disciplines.join(' · ')}</span>
+      {year && <span class="card__year">{year}</span>}
+    </p>
+    <h3 class="card__title">{title}</h3>
+    <p class="card__summary">{summary}</p>
+    {!href && <p class="card__soon label">Write-up coming soon</p>}
+  </div>
+</Tag>
+
+<style>
+  .card {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .card__media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--paper-2);
+  }
+
+  .card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.9s var(--ease);
+  }
+
+  a.card:hover .card__media img {
+    transform: scale(1.04);
+  }
+
+  .card__cta {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    display: inline-flex;
+    gap: 6px;
+    padding: 9px 14px;
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translateY(8px);
+    transition:
+      opacity 0.3s var(--ease),
+      transform 0.3s var(--ease);
+  }
+
+  a.card:hover .card__cta,
+  a.card:focus-visible .card__cta {
+    opacity: 1;
+    transform: none;
+  }
+
+  .card__body {
+    padding-top: 16px;
+  }
+
+  .card__meta {
+    display: flex;
+    gap: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .card__index {
+    color: var(--ink);
+  }
+
+  .card__year {
+    margin-left: auto;
+  }
+
+  .card__title {
+    margin-top: 14px;
+    font-size: clamp(1.5rem, 2vw, 1.875rem);
+    font-weight: 700;
+    font-stretch: 106%;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+  }
+
+  a.card:hover .card__title {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.14em;
+  }
+
+  .card__summary {
+    margin-top: 10px;
+    max-width: 44ch;
+    color: var(--ink-2);
+    font-size: 0.96875rem;
+    line-height: 1.45;
+  }
+
+  .card__soon {
+    margin-top: 12px;
+  }
+</style>

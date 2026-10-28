@@ -1,0 +1,134 @@
+---
+import type { Site } from '../lib/content';
+
+interface Props {
+  site: Site;
+}
+
+const { site } = Astro.props;
+const { contact } = site;
+const year = new Date().getFullYear();
+---
+
+<footer id="contact" class="site-footer on-dark">
+  <div class="container">
+    <p class="label">Contact</p>
+    <h2 class="site-footer__heading">{contact.heading}</h2>
+
+    <div class="site-footer__actions">
+      {
+        contact.email && (
+          <a class="site-footer__email" href={`mailto:${contact.email}`}>
+            {contact.email}
+            <span class="arrow" aria-hidden="true">
+              →
+            </span>
+          </a>
+        )
+      }
+      <ul class="site-footer__links">
+        {
+          contact.links.map((link) => (
+            <li>
+              <a class="link" href={link.url} target="_blank" rel="noopener">
+                {link.label} <span aria-hidden="true">↗</span>
+              </a>
+            </li>
+          ))
+        }
+        {
+          contact.resume && (
+            <li>
+              <a class="link" href={contact.resume} target="_blank" rel="noopener">
+                Résumé (PDF) <span aria-hidden="true">↗</span>
+              </a>
+            </li>
+          )
+        }
+      </ul>
+    </div>
+
+    <div class="site-footer__base label">
+      <span>© {year} {site.name}</span>
+      <span class="site-footer__tagline">{site.tagline}</span>
+      <a href="#top" class="site-footer__top">Back to top ↑</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--ink);
+    color: var(--on-dark);
+    padding-top: var(--section-space);
+    padding-bottom: 28px;
+  }
+
+  .site-footer__heading {
+    margin-top: 20px;
+    font-size: clamp(2.75rem, 8.4vw, 9.5rem);
+    font-weight: 800;
+    font-stretch: 110%;
+    line-height: 0.9;
+    letter-spacing: -0.045em;
+    max-width: 16ch;
+    text-wrap: balance;
+  }
+
+  .site-footer__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 32px 48px;
+    margin-top: clamp(40px, 6vw, 72px);
+    padding-bottom: clamp(56px, 8vw, 112px);
+    border-bottom: 1px solid var(--rule-dark);
+  }
+
+  .site-footer__email {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4em;
+    font-size: clamp(1.375rem, 3vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    text-decoration: none;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 4px;
+    overflow-wrap: anywhere;
+  }
+
+  .site-footer__email:hover .arrow {
+    transform: translateX(6px);
+  }
+
+  .site-footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 28px;
+    font-size: 1.0625rem;
+  }
+
+  .site-footer__base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 24px;
+    padding-top: 24px;
+  }
+
+  .site-footer__top {
+    text-decoration: none;
+  }
+
+  .site-footer__top:hover {
+    color: var(--on-dark);
+  }
+
+  @media (max-width: 640px) {
+    .site-footer__tagline {
+      display: none;
+    }
+  }
+</style>

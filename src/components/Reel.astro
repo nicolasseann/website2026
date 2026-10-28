@@ -1,0 +1,314 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  poster: ImageMetadata;
+  src: string;
+  srcMobile?: string;
+  label: string;
+}
+
+const { poster, src, srcMobile, label } = Astro.props;
+---
+
+<div class="reel-stage">
+  <figure class="reel" data-reel>
+    <video class="reel__video" muted loop playsinline preload="metadata" aria-label={label}>
+      {srcMobile && <source src={srcMobile} type="video/mp4" media="(max-width: 900px)" />}
+      <source src={src} type="video/mp4" />
+    </video>
+    <!-- A responsive stand-in for the poster attribute (which can't use srcset). -->
+    <Image class="reel__poster" src={poster} alt="" widths={[640, 960, 1280, 1920]} sizes="100vw" priority />
+
+    <div class="reel__hud" aria-hidden="true">
+      <span class="reel__corner reel__corner--tl"></span>
+      <span class="reel__corner reel__corner--tr"></span>
+      <span class="reel__corner reel__corner--bl"></span>
+      <span class="reel__corner reel__corner--br"></span>
+      <span class="reel__rec"><span class="reel__rec-dot"></span>Rec</span>
+      <span class="reel__tc" data-reel-tc>00:00:00:00</span>
+      <span class="reel__fig">Fig. 00: Showreel</span>
+    </div>
+
+    <button class="reel__toggle" type="button" data-reel-toggle aria-label="Pause showreel">
+      <svg class="reel__icon reel__icon--pause" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="6" y="5" width="4" height="14" rx="1"></rect>
+        <rect x="14" y="5" width="4" height="14" rx="1"></rect>
+      </svg>
+      <svg class="reel__icon reel__icon--play" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.2-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z"></path>
+      </svg>
+    </button>
+
+    <figcaption class="visually-hidden">{label}</figcaption>
+  </figure>
+</div>
+
+<script>
+  const FPS = 24;
+  const two = (n: number) => String(Math.floor(n)).padStart(2, '0');
+  const timecode = (t: number) =>
+    [t / 3600, (t / 60) % 60, t % 60, (t % 1) * FPS].map(two).join(':');
+
+  for (const reel of document.querySelectorAll<HTMLElement>('[data-reel]')) {
+    const video = reel.querySelector('video')!;
+    const readout = reel.querySelector<HTMLElement>('[data-reel-tc]')!;
+    const toggle = reel.querySelector<HTMLButtonElement>('[data-reel-toggle]')!;
+
+    // Reduced-motion and data-saver visitors start paused and can press play themselves.
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    let pausedByUser = matchMedia('(prefers-reduced-motion: reduce)').matches || Boolean(saveData);
+    let frame = 0;
+
+    const tick = () => {
+      readout.textContent = timecode(video.currentTime);
+      frame = requestAnimationFrame(tick);
+    };
+
+    const sync = () => {
+      const playing = !video.paused;
+      reel.toggleAttribute('data-playing', playing);
+      toggle.setAttribute('aria-label', playing ? 'Pause showreel' : 'Play showreel');
+      cancelAnimationFrame(frame);
+      if (playing) tick();
+    };
+
+    const play = () => video.play().catch(() => sync());
+
+    video.addEventListener('play', sync);
+    video.addEventListener('pause', sync);
+    video.addEventListener('playing', () => reel.setAttribute('data-started', ''), { once: true });
+
+    toggle.addEventListener('click', () => {
+      pausedByUser = !video.paused;
+      if (pausedByUser) video.pause();
+      else play();
+    });
+
+    // Only spend battery on the video while it is on screen.
+    new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !pausedByUser) play();
+        else if (!entry.isIntersecting) video.pause();
+      },
+      { threshold: 0.15 },
+    ).observe(reel);
+
+    sync();
+  }
+</script>
+
+<style>
+  /* The frame straddles the paper/ink boundary so it sits on the logo band below. */
+  .reel-stage {
+    background: linear-gradient(to bottom, var(--paper) 50%, var(--ink) 50%);
+  }
+
+  .reel {
+    /* Starts aligned to the content column, opens to full-bleed on scroll. */
+    --inset: max(var(--gutter), (100% - var(--maxw)) / 2);
+    position: relative;
+    aspect-ratio: 4 / 3;
+    max-height: 88svh;
+    width: 100%;
+    overflow: hidden;
+    background: var(--ink);
+    clip-path: inset(0 var(--inset) round var(--radius));
+  }
+
+  @media (min-width: 700px) {
+    .reel {
+      aspect-ratio: 16 / 9;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .reel {
+      aspect-ratio: 2.1 / 1;
+    }
+  }
+
+  /* Longhands on purpose: minifiers fold `animation-timeline` into the
+     `animation` shorthand, which Chrome rejects. */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: scroll()) {
+      .reel {
+        animation-name: reel-open;
+        animation-fill-mode: both;
+        animation-timing-function: linear;
+        animation-timeline: scroll(root);
+        animation-range: 0 65vh;
+      }
+    }
+  }
+
+  @keyframes reel-open {
+    to {
+      clip-path: inset(0 0 round 0);
+    }
+  }
+
+  .reel__video,
+  .reel__poster {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .reel__poster {
+    transition: opacity 0.5s var(--ease);
+  }
+
+  .reel[data-started] .reel__poster {
+    opacity: 0;
+  }
+
+  /* Viewfinder overlay ---------------------------------------------------- */
+
+  .reel__hud {
+    position: absolute;
+    inset: 0 var(--inset);
+    padding: clamp(14px, 2.2vw, 28px);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: clamp(0.625rem, 0.9vw, 0.75rem);
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-shadow: 0 1px 8px rgb(0 0 0 / 0.45);
+    pointer-events: none;
+    background:
+      linear-gradient(to bottom, rgb(0 0 0 / 0.32), transparent 26%),
+      linear-gradient(to top, rgb(0 0 0 / 0.28), transparent 30%);
+  }
+
+  .reel__corner {
+    position: absolute;
+    width: clamp(14px, 1.6vw, 22px);
+    height: clamp(14px, 1.6vw, 22px);
+    border: 0 solid rgb(255 255 255 / 0.85);
+  }
+
+  .reel__corner--tl {
+    top: clamp(8px, 1.1vw, 14px);
+    left: clamp(8px, 1.1vw, 14px);
+    border-top-width: 1.5px;
+    border-left-width: 1.5px;
+  }
+
+  .reel__corner--tr {
+    top: clamp(8px, 1.1vw, 14px);
+    right: clamp(8px, 1.1vw, 14px);
+    border-top-width: 1.5px;
+    border-right-width: 1.5px;
+  }
+
+  .reel__corner--bl {
+    bottom: clamp(8px, 1.1vw, 14px);
+    left: clamp(8px, 1.1vw, 14px);
+    border-bottom-width: 1.5px;
+    border-left-width: 1.5px;
+  }
+
+  .reel__corner--br {
+    bottom: clamp(8px, 1.1vw, 14px);
+    right: clamp(8px, 1.1vw, 14px);
+    border-bottom-width: 1.5px;
+    border-right-width: 1.5px;
+  }
+
+  .reel__rec,
+  .reel__tc,
+  .reel__fig {
+    position: absolute;
+  }
+
+  .reel__rec {
+    top: clamp(16px, 2.4vw, 32px);
+    left: clamp(20px, 2.8vw, 38px);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .reel__rec-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgb(255 79 0 / 0.25);
+  }
+
+  .reel[data-playing] .reel__rec-dot {
+    animation: rec-blink 1.6s steps(2, jump-none) infinite;
+  }
+
+  @keyframes rec-blink {
+    50% {
+      opacity: 0.25;
+    }
+  }
+
+  .reel__tc {
+    top: clamp(16px, 2.4vw, 32px);
+    right: clamp(20px, 2.8vw, 38px);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .reel__fig {
+    right: clamp(20px, 2.8vw, 38px);
+    bottom: clamp(16px, 2.4vw, 32px);
+  }
+
+  @media (max-width: 480px) {
+    .reel__fig {
+      display: none;
+    }
+  }
+
+  /* Play / pause ---------------------------------------------------------- */
+
+  .reel__toggle {
+    position: absolute;
+    left: calc(var(--inset) + clamp(14px, 2.2vw, 28px));
+    bottom: clamp(12px, 2vw, 24px);
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid rgb(255 255 255 / 0.35);
+    border-radius: 50%;
+    background: rgb(18 18 18 / 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #fff;
+    cursor: pointer;
+    transition:
+      background-color 0.2s var(--ease),
+      border-color 0.2s var(--ease);
+  }
+
+  .reel__toggle:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+
+  .reel__icon {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+
+  .reel__icon--pause,
+  .reel[data-playing] .reel__icon--play {
+    display: none;
+  }
+
+  .reel[data-playing] .reel__icon--pause {
+    display: block;
+  }
+</style>
