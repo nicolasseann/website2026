@@ -1,6 +1,6 @@
 ---
 title: E-Board
-order: 9
+order: 12
 year: 2016
 disciplines: [Electronics, Electric vehicles]
 context: Personal project

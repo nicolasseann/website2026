@@ -1,6 +1,6 @@
 ---
 title: Pulley Finger
-order: 10
+order: 13
 year: 2023
 disciplines: [Robotics, Biomimetics]
 context: Robotics engineering intern at Kind Humanoid

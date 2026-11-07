@@ -24,6 +24,15 @@ settings:
     srcMobile: /media/reel-720.mp4
     label: Showreel of builds and tests in the Hacksmith Industries shop
 
+  onScreen:
+    label: "Projects seen on:"
+    platforms:
+      - name: YouTube
+      - name: Prime Video
+        accent: true
+      - name: Disney+
+        accent: true
+
   logos:
     - name: Hacksmith Industries
       image: ../assets/logos/hacksmith.png
@@ -37,25 +46,16 @@ settings:
   about:
     lead: I’m a mechanical engineer who builds things out of curiosity.
     portrait: ../assets/site/portrait.jpg
-    portraitAlt: Nicolas Coleman smiling in the Hacksmith Industries shop, wearing safety glasses and a black Hacksmith T-shirt.
+    portraitAlt: Nicolas Coleman smiling on a wooden deck among tall trees, in a white graphic hoodie and brown cargo pants.
     body:
       - In November 2016, a Hacksmith Industries video made me curious enough to build an electromagnetic Captain America shield. Almost eight years later I was working at Hacksmith as an R&D engineering intern, helping develop a pneumatic power-armor exoskeleton.
       - Along the way I’ve been a robotics intern at Kind Humanoid, where I designed a biomimetic, tendon-driven robotic finger, and an R&D intern at Walt Disney Imagineering, contributing to the next generation of aqueous animatronics. I did all of that while studying mechanical engineering at Stanford.
       - I like building things that wouldn’t exist otherwise, especially ones that make people feel super.
-    stats:
-      - value: "~2,000 lb"
-        label: Deadlifted by the power-armor exoskeleton
-      - value: "2.5M+"
-        label: Viewers reached by viral test videos
-      - value: "1 week"
-        label: From idea to first pneumatic-claws prototype
-      - value: "24 hrs"
-        label: Concept to finished trophy at Imagineering
 
   experience:
     - org: Walt Disney Imagineering
       role: Research & Development Engineering Intern
-      dates: Since 2025
+      dates: June to September 2025, and June 2026 to present
       location: Glendale, CA
       note: Next-generation aqueous animatronics. On the team’s hydrofoil character, I’ve developed test equipment and the connection between its mast, foil and motor.
     - org: Hacksmith Industries

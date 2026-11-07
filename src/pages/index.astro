@@ -52,9 +52,9 @@ const { about } = site;
     <Reel poster={site.reel.poster} src={site.reel.src} srcMobile={site.reel.srcMobile} label={site.reel.label} />
   </section>
 
-  <!-- Logos ----------------------------------------------------------- -->
-  <section class="logos on-dark" aria-label="Where I’ve worked and studied">
-    <div class="container">
+  <!-- Logos + where the work has been seen --------------------------- -->
+  <div class="logos on-dark">
+    <section class="container" aria-label="Where I’ve worked and studied">
       <ul class="logos__list">
         {
           site.logos.map((logo) => (
@@ -64,8 +64,27 @@ const { about } = site;
           ))
         }
       </ul>
-    </div>
-  </section>
+    </section>
+    {
+      site.onScreen && (
+        <section class="on-screen container" aria-labelledby="on-screen-title">
+          <h2 id="on-screen-title" class="label">
+            {site.onScreen.label}
+          </h2>
+          <ul class="on-screen__list">
+            {site.onScreen.platforms.map(({ name, accent }) => (
+              <li class:list={['on-screen__item', { 'on-screen__item--accent': accent }]}>
+                <svg class="on-screen__play" viewBox="0 0 10 10" aria-hidden="true">
+                  <path d="M2.5 1.5v7l5.5-3.5z" />
+                </svg>
+                {name}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+  </div>
 
   <!-- Work ------------------------------------------------------------ -->
   <section id="work" class="section" aria-labelledby="work-title">
@@ -97,23 +116,12 @@ const { about } = site;
 
       <div class="about__grid">
         <figure class="about__portrait reveal">
-          <Image src={about.portrait} alt={about.portraitAlt} widths={[400, 600, 736]} sizes="(min-width: 960px) 34vw, 92vw" />
+          <Image src={about.portrait} alt={about.portraitAlt} widths={[480, 720, 960, 1200]} sizes="(min-width: 960px) 520px, 92vw" />
         </figure>
         <div class="about__body">
           {about.body.map((paragraph) => <p>{paragraph}</p>)}
         </div>
       </div>
-
-      <dl class="stats">
-        {
-          about.stats.map(({ value, label }) => (
-            <div class="stats__item reveal">
-              <dt class="stats__label">{label}</dt>
-              <dd class="stats__value">{value}</dd>
-            </div>
-          ))
-        }
-      </dl>
 
       <div class="about__block">
         <h3 class="label">Experience</h3>
@@ -311,6 +319,45 @@ const { about } = site;
     }
   }
 
+  /* Seen on: a quiet line under the logos. */
+  .on-screen {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px 28px;
+    margin-top: clamp(40px, 5vw, 72px);
+    padding-top: clamp(22px, 2.6vw, 32px);
+    border-top: 1px solid var(--rule-dark);
+  }
+
+  .on-screen__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 28px;
+  }
+
+  .on-screen__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--on-dark-muted);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .on-screen__play {
+    width: 0.55em;
+    height: 0.55em;
+    fill: rgb(241 240 236 / 0.32);
+  }
+
+  .on-screen__item--accent .on-screen__play {
+    fill: var(--wdi-blue);
+  }
+
   /* Work ---------------------------------------------------------------- */
 
   .count {
@@ -381,62 +428,6 @@ const { about } = site;
 
     .about__portrait {
       max-width: 520px;
-    }
-  }
-
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-top: clamp(64px, 9vw, 128px);
-    border-top: 1px solid var(--ink);
-  }
-
-  .stats__item {
-    container-type: inline-size;
-    display: flex;
-    flex-direction: column-reverse;
-    justify-content: flex-end;
-    gap: 10px;
-    padding: 20px 18px 8px;
-    border-left: 1px solid var(--rule);
-  }
-
-  .stats__item:nth-child(odd) {
-    padding-left: 0;
-    border-left: 0;
-  }
-
-  .stats__value {
-    /* Sized to its column so the widest value ("~2,000 lb") always fits. */
-    font-size: min(4.25rem, 17cqi);
-    font-weight: 700;
-    font-stretch: 108%;
-    line-height: 0.95;
-    letter-spacing: -0.04em;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
-
-  .stats__label {
-    max-width: 24ch;
-    color: var(--muted);
-    font-size: 0.9375rem;
-    line-height: 1.4;
-  }
-
-  @media (min-width: 960px) {
-    .stats {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    .stats__item:nth-child(odd) {
-      padding-left: 18px;
-      border-left: 1px solid var(--rule);
-    }
-
-    .stats__item:first-child {
-      padding-left: 0;
-      border-left: 0;
     }
   }
 

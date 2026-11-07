@@ -1,6 +1,6 @@
 ---
 title: Power Armor Exo
-order: 3
+order: 2
 year: 2024
 disciplines: [Pneumatics, Exoskeletons]
 context: R&D engineering intern at Hacksmith Industries
@@ -45,6 +45,13 @@ videos:
   - youtube: 0_Ekx0djHgU
     title: The Power Armor Legs Are Complete! (Part 7/6)
     note: I prepared test samples to find the lightest, safest Kevlar composite.
+photos:
+  - image: ../../assets/projects/power-armor-exo/full-suit.jpg
+    alt: Someone wearing the full power armor in a gym, with a gray 3D-printed helmet and shoulder pieces over the pneumatic arms and leg frames.
+    caption: The suit with its printed armor
+  - image: ../../assets/projects/power-armor-exo/barbell.jpg
+    alt: Close-up of the pneumatic power arms gripping a barbell, with cylinders and perforated aluminum cuffs on each arm.
+    caption: Gripping a barbell in the power arms
 ---
 
 My main project for the summer of 2024 at Hacksmith Industries was a pneumatic power-armor exoskeleton, focused on the power arms and built to look and work like the suits from the *Fallout* games. We built two versions of the arms, and the second used what we learned from the first.

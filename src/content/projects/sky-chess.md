@@ -1,6 +1,6 @@
 ---
 title: Sky Chess
-order: 2
+order: 3
 year: 2025
 disciplines: [Robotics, Computer vision]
 context: Independent study, spring of junior year

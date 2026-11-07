@@ -4,6 +4,7 @@ import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import YouTube from '../../components/YouTube.astro';
+import PhotoStrip from '../../components/PhotoStrip.astro';
 import { getProjects, pad, type Project } from '../../lib/content';
 
 export const getStaticPaths = (async () => {
@@ -185,6 +186,17 @@ data.sections.forEach((section, i) => {
     }
 
     {
+      data.photos.length > 0 && (
+        <section class="photos container" aria-labelledby="photos-title">
+          <h2 id="photos-title" class="label photos__title">
+            More photos
+          </h2>
+          <PhotoStrip photos={data.photos} />
+        </section>
+      )
+    }
+
+    {
       data.videos.length > 0 && (
         <section class="videos container" aria-labelledby="videos-title">
           <h2 id="videos-title" class="label">
@@ -326,6 +338,35 @@ data.sections.forEach((section, i) => {
   .prose :global(a) {
     text-decoration-color: var(--accent);
     text-underline-offset: 0.2em;
+  }
+
+  .prose :global(ul) {
+    display: grid;
+    gap: 0.6em;
+    max-width: 52ch;
+    margin-top: 1em;
+    font-size: clamp(1.0625rem, 1.35vw, 1.25rem);
+    line-height: 1.45;
+    color: var(--ink-2);
+  }
+
+  .prose :global(ul + p) {
+    margin-top: 1.2em;
+  }
+
+  .prose :global(li) {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .prose :global(li)::before {
+    content: '';
+    flex: none;
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    transform: translateY(-3px);
   }
 
   .project__aside {
@@ -499,6 +540,18 @@ data.sections.forEach((section, i) => {
     width: auto;
     max-height: 86svh;
     border-radius: var(--radius);
+  }
+
+  .photos {
+    display: grid;
+    gap: 24px;
+    margin-top: clamp(72px, 10vw, 136px);
+  }
+
+  .photos__title {
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--ink);
+    color: var(--ink);
   }
 
   .videos {

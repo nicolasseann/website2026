@@ -48,6 +48,10 @@ const projects = defineCollection({
       gallery: z
         .array(z.object({ image: image(), alt: z.string(), caption: z.string().optional() }))
         .default([]),
+      /** Extra photos, shown together in rows under "More photos". */
+      photos: z
+        .array(z.object({ image: image(), alt: z.string(), caption: z.string().optional() }))
+        .default([]),
       videos: z
         .array(
           z.object({
@@ -80,13 +84,19 @@ const site = defineCollection({
         srcMobile: z.string().optional(),
         label: z.string(),
       }),
+      /** Platforms the work has appeared on, shown quietly under the logos. `accent` tints the play mark blue. */
+      onScreen: z
+        .object({
+          label: z.string(),
+          platforms: z.array(z.object({ name: z.string(), accent: z.boolean().default(false) })),
+        })
+        .optional(),
       logos: z.array(z.object({ name: z.string(), image: image() })),
       about: z.object({
         lead: z.string(),
         portrait: image(),
         portraitAlt: z.string(),
         body: z.array(z.string()),
-        stats: z.array(z.object({ value: z.string(), label: z.string() })),
       }),
       experience: z.array(
         z.object({

@@ -15,6 +15,7 @@
   --on-dark: #f1f0ec;
   --on-dark-muted: #a3a19a;
   --rule-dark: rgb(241 240 236 / 0.16);
+  --wdi-blue: #529bbb; /* the sparkle blue in the Imagineering logo */
 
   --sans: var(--font-archivo), 'Helvetica Neue', Arial, sans-serif;
   --mono: var(--font-plex-mono), ui-monospace, Menlo, monospace;

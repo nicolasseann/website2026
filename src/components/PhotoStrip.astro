@@ -1,0 +1,58 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  photos: Array<{ image: ImageMetadata; alt: string; caption?: string }>;
+}
+
+const { photos } = Astro.props;
+---
+
+<ul class="strip">
+  {
+    photos.map(({ image, alt, caption }) => (
+      <li class="strip__item reveal" style={`--ar: ${(image.width / image.height).toFixed(4)}`}>
+        <figure>
+          <Image src={image} alt={alt} widths={[320, 480, 720, 960, 1280]} sizes="(min-width: 960px) 36vw, 90vw" />
+          {caption && <figcaption class="label">{caption}</figcaption>}
+        </figure>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  /* Justified rows: each photo grows in proportion to its aspect ratio, so photos in a row share one height. */
+  .strip {
+    --row: clamp(190px, 27vw, 400px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px 12px;
+  }
+
+  /* Takes up the last row's spare space so its photos aren't stretched. */
+  .strip::after {
+    content: '';
+    flex-grow: 1000000;
+  }
+
+  .strip__item {
+    flex-grow: calc(var(--ar) * 100);
+    flex-shrink: 1;
+    flex-basis: calc(var(--ar) * var(--row));
+    min-width: 0;
+  }
+
+  .strip__item img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--ar);
+    object-fit: cover;
+    border-radius: var(--radius);
+    background: var(--paper-2);
+  }
+
+  figcaption {
+    margin-top: 10px;
+  }
+</style>

@@ -47,3 +47,12 @@ At Walt Disney Imagineering R&D, I’m an intern on a team developing the next g
 It’s a team effort. I worked mostly on test equipment, and on how the mast, foil and motor connect on the most recent foil. Along the way, I began to understand the foil itself, and how to analyze it in XFLR5.
 
 The hydrofoil grew out of the team’s earlier aquatic prototypes, a radio-controlled underwater plane and a biomimetic dolphin. It was featured in Imagineering’s *We Call It Imagineering* series.
+
+The character is an autonomous manta ray, part of Disney’s first generation of aqueous, autonomous animatronic robots. The project felt equal parts engineering challenge and fever dream, and I thought it was the coolest thing ever. There are heavy restrictions on what I can share about it, but I learned a ton:
+
+- Rapid prototyping that keeps its structural integrity, with heat-set inserts, square nuts set in to take load, and SLS printing
+- The aerodynamic principles behind the foil
+- Integrating PID controllers for autonomous navigation
+- Working in a team to scale up a project
+
+One piece of the test equipment was the [manta ray lift](/work/manta-ray-lift/), a crane that fellow intern Aaryan Kainth and I built to raise the robot in and out of the test water.

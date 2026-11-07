@@ -1,6 +1,6 @@
 ---
 title: Ping Pong Trophy
-order: 6
+order: 10
 year: 2025
 disciplines: [Product design, Fabrication]
 context: Intern project at Walt Disney Imagineering

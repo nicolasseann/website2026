@@ -23,6 +23,10 @@ sections:
     body: I used machine-shop skills to manufacture and assemble the custom manifolds, the blades and the rest of the parts.
   - heading: Presented to the CEO
     body: I designed and built the first prototype within one week, then presented it to the CEO of Hacksmith Industries.
+photos:
+  - image: ../../assets/projects/wolverine-claws/presenting.jpg
+    alt: A colleague holding up the claws on his arm in the machine shop while Nicolas laughs beside him.
+    caption: Presenting the first prototype
 ---
 
 A custom pneumatic system deploys and hides a set of Wolverine claws, modeled after the *Deadpool & Wolverine* movie.
