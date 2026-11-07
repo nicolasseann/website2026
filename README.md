@@ -52,16 +52,22 @@ A few rules keep these files working:
 
 ## Deploying
 
-The site builds to plain files in `dist/`, so any static host works. Recommended:
+The site is hosted on **GitHub Pages** from the `nicolasseann/website2026` repository. Every push to `main` runs `.github/workflows/deploy.yml`, which builds the site and publishes it, usually within two minutes. Progress shows in the repository's **Actions** tab.
 
-1. Push this folder to a GitHub repository.
-2. Connect the repository to **Cloudflare Pages** (free, with no bandwidth cap, which matters for video).
-   - Build command: `npm run build`
-   - Output directory: `dist`
-   - The Node version comes from `.node-version`. Astro needs Node 22.23.4 or newer.
-3. The domain is registered at GoDaddy. Add it to Cloudflare on the free plan, then in GoDaddy replace its nameservers with the two Cloudflare gives you. Once Cloudflare shows the domain as active, delete the old Wix records and add `www.nicolascoleman.me` and `nicolascoleman.me` as custom domains on the Pages project. Keep the Wix plan until the new site is live.
+How it's set up:
 
-Every push to GitHub then rebuilds and redeploys the site automatically. Netlify, Vercel and GitHub Pages work the same way.
+- **GitHub:** Settings → Pages → Source is **GitHub Actions**, and the custom domain is `www.nicolascoleman.me` with **Enforce HTTPS** on. `public/CNAME` names the same domain.
+- **Domain:** registered at GoDaddy, with its DNS managed in Cloudflare (free plan). All records are set to **DNS only** (gray cloud), because GitHub can't issue the HTTPS certificate through Cloudflare's proxy.
+
+| Type  | Name  | Value                    |
+| ----- | ----- | ------------------------ |
+| A     | `@`   | `185.199.108.153`        |
+| A     | `@`   | `185.199.109.153`        |
+| A     | `@`   | `185.199.110.153`        |
+| A     | `@`   | `185.199.111.153`        |
+| CNAME | `www` | `nicolasseann.github.io` |
+
+GitHub redirects the bare domain to `www` automatically. Free GitHub accounts can only publish Pages from public repositories, so keep this one public.
 
 ## Notes
 
