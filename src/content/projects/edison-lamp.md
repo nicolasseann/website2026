@@ -21,12 +21,6 @@ sections:
   - heading: Three doors, one gear system
     body: The hardest part was the mechanism. The gear system at the top had to open and close all three doors together. After a long process of testing, troubleshooting and redesign, it worked.
 photos:
-  - image: ../../assets/projects/edison-lamp/walnut.jpg
-    alt: Feeding a board through a jointer in the shop.
-    caption: Prepping the wood
-  - image: ../../assets/projects/edison-lamp/lathe.jpg
-    alt: A stepped wooden disc spinning on a wood lathe.
-    caption: Turning the base
   - image: ../../assets/projects/edison-lamp/base.jpg
     alt: The turned walnut base resting on a picnic table in the sun, with a small hole through its center.
     caption: The turned base
