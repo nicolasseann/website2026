@@ -27,9 +27,21 @@ photos:
   - image: ../../assets/projects/edison-lamp/lathe.jpg
     alt: A stepped wooden disc spinning on a wood lathe.
     caption: Turning the base
+  - image: ../../assets/projects/edison-lamp/base.jpg
+    alt: The turned walnut base resting on a picnic table in the sun, with a small hole through its center.
+    caption: The turned base
   - image: ../../assets/projects/edison-lamp/posts.jpg
-    alt: Three steel posts standing in the turned wooden base on a workbench.
+    alt: Three aluminum posts standing in the turned walnut base on a workbench.
     caption: Posts set into the base
+  - image: ../../assets/projects/edison-lamp/plate.jpg
+    alt: A laser-cut steel disc with three small holes and a slot running to its center, held in one hand.
+    caption: A laser-cut steel plate
+  - image: ../../assets/projects/edison-lamp/gears.jpg
+    alt: A laser-cut steel gear with curved spokes and three small gears resting on it, clamped in a vise beside two files.
+    caption: Cleaning up the gears
+  - image: ../../assets/projects/edison-lamp/doors.jpg
+    alt: Three curved steel door panels on a welding table, two of them welded to a rod along one edge.
+    caption: Welding the doors
   - image: ../../assets/projects/edison-lamp/assembly.jpg
     alt: The lamp partly assembled outdoors, with raw steel doors curved around the bulb socket.
     caption: The doors in an early assembly
