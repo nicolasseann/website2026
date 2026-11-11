@@ -15,7 +15,6 @@ skills:
   - Preliminary research
   - Mechanism design
   - Pneumatic system design
-  - State-machine control
   - Figure finishing
   - Sheet-metal fabrication
 highlights:
@@ -56,4 +55,4 @@ photos:
 
 My main project for the summer of 2024 at Hacksmith Industries was a pneumatic power-armor exoskeleton, focused on the power arms and built to look and work like the suits from the *Fallout* games. We built two versions of the arms, and the second used what we learned from the first.
 
-I contributed to the pneumatic design and interfaced it with a state machine that controls the exo’s movements. I was involved in every phase of the build, and I led the preliminary research.
+I contributed to the pneumatic design. I was involved in every phase of the build, and I led the preliminary research.
